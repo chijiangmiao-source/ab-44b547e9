@@ -1,0 +1,37 @@
+# 雷达脉冲序列审计 · Docker Compose
+#
+# 用法：
+#   启动页面（默认宿主机端口 8080）：
+#     docker compose up --build web
+#   自定义宿主机端口（如 9090）：
+#     APP_PORT=9090 docker compose up --build web
+#   执行验收（构建并启动 web，待其健康后运行验收，验收容器退出码即结果）：
+#     docker compose up --build --exit-code-from verify verify
+
+services:
+  web:
+    build:
+      context: .
+      target: web
+    image: radar-pulse-audit-web
+    ports:
+      # 宿主机端口可通过环境变量 APP_PORT 配置，默认 8080
+      - "${APP_PORT:-8080}:80"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1/healthz"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+
+  verify:
+    build:
+      context: .
+      target: verify
+    image: radar-pulse-audit-verify
+    depends_on:
+      web:
+        condition: service_healthy
+    environment:
+      # 验收脚本访问的页面地址（Compose 网络内）
+      WEB_URL: "http://web:80"
