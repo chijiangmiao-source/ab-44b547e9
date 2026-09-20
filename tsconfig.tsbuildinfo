@@ -1,0 +1,1 @@
+{"root":["./src/App.tsx","./src/main.tsx","./src/components/Timeline.tsx","./src/lib/auditWorker.ts","./src/lib/presets.ts","./src/lib/solver.test.ts","./src/lib/solver.ts","./src/lib/useAudit.ts","./src/lib/validation.ts","./vite.config.ts"],"version":"5.6.3"}
